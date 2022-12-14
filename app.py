@@ -1,8 +1,10 @@
 from flask import Flask, request
+from flask_cors import CORS
 import pickle
 import csv
 
 app = Flask(__name__)
+CORS(app)
 
 @app.post('/prediction')
 def get_prediction():
