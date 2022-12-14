@@ -36,7 +36,7 @@ def get_prediction():
 
     return {'predicted_winner': prediction}
 
-
+# Predicts winner of a match
 def predict(features):
     with open('model_pickle', 'rb') as f:
         model = pickle.load(f)
@@ -44,14 +44,14 @@ def predict(features):
 
         return predictions[0]
 
-
+# Encodes categorical values
 def encode_values(hteam, ateam, tournament, neutral):
     with open('encoder_pickle', 'rb') as f:
         encoder = pickle.load(f)
         encoded = encoder.transform([[hteam, ateam, tournament, neutral]]).toarray()
         return encoded[0]
 
-
+# Calculate winning percentage of a specific team within an 8 year span
 def get_win_percentage(team):
     games = 0
     wins = 0
@@ -62,15 +62,16 @@ def get_win_percentage(team):
         for row in reader:
             match = dict(row)
 
+            # If the limit is exceeded or the team is not in the match, skip
             if float(match['epoch']) < limit or (team not in [match['home_team'], match['away_team']]):
                 continue
 
             games += 1
 
+            # If team won
             if (match['winner'] == 'Home' and team == match['home_team']) or (match['winner'] == 'Away' and team in match['away_team']):
                 wins += 1
 
-    print(games)
     return 0 if games == 0 else wins / games
 
             

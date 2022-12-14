@@ -12,11 +12,14 @@ def main():
     matches = get_matches()
     write_csv(matches)
 
-
+# Generates a new csv that only contains the values utilized by our model.
+# Specifically, it ignores the home_score and away_score columns as those
+# values are not available when predicting
 def write_csv(matches):
     with open('preprocessed_results.csv', 'w') as csvfile:
         writer = csv.writer(csvfile)
 
+        # Pertinent columns
         header = [
             'epoch',
             'home_team',
@@ -29,6 +32,7 @@ def write_csv(matches):
         ]
         writer.writerow(header)
 
+        # Generating csv
         for i, match in enumerate(matches):
             hteam = match['home_team']
             ateam = match['away_team']
@@ -47,6 +51,11 @@ def write_csv(matches):
             writer.writerow(match_to_row)
 
 
+# Processes and filters csv file containing all recorded international matches
+# since the late 1800s into a list of matches comprised only of games were one
+# of the teams where from countries currently playing in the 2022 World Cup.
+# Also, the new list includes the winning percentage for the previous 8 years 
+# of both teams in every match, as well as the determined victor of the match.
 def get_matches():
     matches = []
     with open('results.csv') as csvfile:
@@ -58,6 +67,7 @@ def get_matches():
             hteam = d['home_team']
             ateam = d['away_team']
 
+            # Ignore matches where no 2022 World Cup participants are present
             if hteam not in WC22_TEAMS and ateam not in WC22_TEAMS: continue
 
             matches.append(d)
@@ -71,11 +81,13 @@ def get_matches():
             else:
                 d['winner'] = 'Away'
 
+            # Calculate epoch of match date for ease of processing down the line
             date = datetime.strptime(row['date'], '%Y-%m-%d')
             epoch = date.timestamp()
             d['epoch'] = epoch
-
             limit = epoch - SECONDS_FOR_8YEARS
+
+            # Calculate winning percentages
             hteam_wp, ateam_wp = get_win_percents(matches, hteam, ateam, limit)
 
             d['home_team_win_percent'] = hteam_wp
@@ -84,6 +96,9 @@ def get_matches():
     return matches
 
 
+# Calculates winning percentages for both teams of a particular match.
+# Only focuses on matches that are up to 8 years before the date of the
+# match.
 def get_win_percents(matches, hteam, ateam, limit):
     hteam_stats = {
         'total_games': 0,
@@ -94,6 +109,7 @@ def get_win_percents(matches, hteam, ateam, limit):
         'total_wins': 0
     }
 
+    # Evaluate matches from earliest to latest
     for match in reversed(matches[:-1]):
         # Break if limit exceeded
         if match['epoch'] < limit: break
@@ -102,11 +118,13 @@ def get_win_percents(matches, hteam, ateam, limit):
         if hteam not in match_teams and ateam not in match_teams:
             continue
 
+        # If home team won
         if hteam in match_teams:
             hteam_stats['total_games'] += 1
             if (match['winner'] == 'Home' and hteam == match['home_team']) or (match['winner'] == 'Away' and hteam == match['away_team']):
                     hteam_stats['total_wins'] += 1
 
+        # If away team won
         if ateam in match_teams:
             ateam_stats['total_games'] += 1
             if (match['winner'] == 'Home' and ateam == match['home_team']) or (match['winner'] == 'Away' and ateam == match['away_team']):
