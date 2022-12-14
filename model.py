@@ -35,6 +35,10 @@ y_pred = mnb.fit(X_train, y_train)
 # with open('model_pickle', 'wb') as f:
 #     pickle.dump(y_pred, f)
 
+# # Save one hot encoder
+# with open('encoder_pickle', 'wb') as f:
+#     pickle.dump(ohe, f)
+
 # Accuracy
 predicted_labels = y_pred.predict(X_test)
 print(f'Accuracy  = {metrics.accuracy_score(predicted_labels,  y_test)}')
@@ -42,7 +46,6 @@ print(f'Dataframe Size: {len(df.index)} Rows')
 print(f'Unique Home Teams: {len(df["home_team"].unique())}')
 print(f'Unique Away Teams: {len(df["away_team"].unique())}')
 print(f'Unique Tournaments: {len(df["tournament"].unique())}')
-# exit()
 
 with open('model_pickle', 'rb') as f:
     model = pickle.load(f)

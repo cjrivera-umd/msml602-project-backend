@@ -2,12 +2,10 @@ import csv
 from datetime import datetime
 
 SECONDS_FOR_8YEARS = 251596800
-SECONDS_FOR_10DAYS = 864000
 WC22_TEAMS = ['Qatar', 'Brazil', 'Belgium', 'France', 'Argentina', 'England', 'Spain', 'Portugal', 'Mexico',
         'Netherlands', 'Denmark', 'Germany', 'Uruguay', 'Switzerland', 'United States', 'Croatia', 
         'Senegal', 'Iran', 'Japan', 'Morocco', 'Serbia', 'Poland', 'South Korea', 'Tunisia', 'Cameroon',
         'Canada', 'Ecuador', 'Saudi Arabia', 'Ghana', 'Wales', 'Costa Rica', 'Australia']
-ALL_TEAMS = []
 
 
 def main():
@@ -20,6 +18,7 @@ def write_csv(matches):
         writer = csv.writer(csvfile)
 
         header = [
+            'epoch',
             'home_team',
             'away_team',
             'tournament',
@@ -57,11 +56,8 @@ def get_matches():
             d = dict(row)
 
             hteam = d['home_team']
-            if hteam not in ALL_TEAMS: ALL_TEAMS.append(hteam)
             ateam = d['away_team']
-            if ateam not in ALL_TEAMS: ALL_TEAMS.append(ateam)
 
-            # if not (hteam in WC22_TEAMS and ateam in WC22_TEAMS): continue
             if hteam not in WC22_TEAMS and ateam not in WC22_TEAMS: continue
 
             matches.append(d)
